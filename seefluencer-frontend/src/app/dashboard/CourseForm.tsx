@@ -46,6 +46,10 @@ export default function CourseForm({ course, onSuccess, isOpen, setIsOpen, setCo
             });
         }
         onSuccess();
+        setIsOpen?.(false)
+        setTitle("")
+        setDescription("")
+        setCourseToEdit?.(null)
     };
 
 

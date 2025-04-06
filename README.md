@@ -18,6 +18,9 @@ This project is split into two main parts:
 
 ## Getting Started
 
+### Quick Tutorial and Demo
+https://www.youtube.com/watch?v=fcap4q3VzHY
+
 ### Backend Setup
 
 1. Navigate to the backend directory:

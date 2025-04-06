@@ -38,14 +38,14 @@ php artisan key:generate
 ```
 
 4. Run Postgresql (in my Case using docker):
-
+```
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
 DB_DATABASE=seefluencer_backend
 DB_USERNAME=postgres
 DB_PASSWORD=secret
-
+```
 docker run --name run-demo \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=secret \

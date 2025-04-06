@@ -39,7 +39,7 @@ export default function DashboardClient({ session }: DashboardClientProps) {
     }, [session]);
 
     if (!session) {
-        return <div className="flex flex-col gap-4 p-8">
+        return <div className="flex flex-col gap-4  bg-white p-6 rounded-lg shadow-md">
             <h1 className="text-2xl font-bold">Seefluencer Course Dashboard</h1>
             <p>Please log in to access the Dashboard.</p>
             <AuthButton />

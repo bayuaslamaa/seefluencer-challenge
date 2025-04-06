@@ -34,7 +34,25 @@ composer install
 ```bash
 cp .env.example .env
 php artisan key:generate
+
 ```
+
+4. Run Postgresql (in my Case using docker):
+
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=seefluencer_backend
+DB_USERNAME=postgres
+DB_PASSWORD=secret
+
+docker run --name run-demo \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=secret \
+  -e POSTGRES_DB=seefluencer_backend \
+  -p 5432:5432 \
+  -d postgres
+
 
 4. Configure your database in `.env` and run migrations:
 ```bash
@@ -43,7 +61,7 @@ php artisan migrate
 
 5. Start the development server:
 ```bash
-php artisan serve
+composer run dev
 ```
 
 ### Frontend Setup
@@ -58,11 +76,15 @@ cd seefluencer-frontend
 npm install
 # or
 yarn install
+# or
+pnpm install
 ```
 
 3. Set up your environment:
 ```bash
-cp .env.example .env.local
+cp .env.example .env
+
+envs sent to Kak Agung
 ```
 
 4. Start the development server:
@@ -91,19 +113,6 @@ The Next.js frontend includes:
 - Path aliases configured (`@/*`)
 - Built-in optimization features
 
-## Testing
-
-### Backend Tests
-```bash
-cd seefluencer-backend
-php artisan test
-```
-
-### Frontend Tests
-```bash
-cd seefluencer-frontend
-npm run test
-```
 
 ## Contributing
 

@@ -35,7 +35,7 @@ export default function LessonsList({ courseId, session, setLessons, lessons, se
             const data = await res.json();
             setLessons(data);
         } catch (error) {
-            toast.error("Error fetching lessons");
+            toast.error("Error fetching lessons " + JSON.stringify(error));
         }
     };
 
@@ -80,7 +80,7 @@ export default function LessonsList({ courseId, session, setLessons, lessons, se
             fetchLessons();
             toast.success("Lesson deleted successfully");
         } catch (error) {
-            toast.error("Error deleting lesson");
+            toast.error("Error deleting lesson " + JSON.stringify(error));
         }
     };
 

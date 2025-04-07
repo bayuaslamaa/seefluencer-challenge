@@ -1,7 +1,7 @@
 "use client";
 
 import type { Session } from "next-auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { API_URL } from "@/lib/constants";
 import LessonsList from "./LessonList";
 import { useParams, useRouter } from "next/navigation";
@@ -18,6 +18,8 @@ export default function LessonClient({ session }: LessonClientProps) {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [lessonToEdit, setLessonToEdit] = useState<Lesson | null>(null);
     const [isOpen, setIsOpen] = useState(false);
+    const router = useRouter();
+    const { course_id } = useParams();
     if (!session) {
         return <div className="flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md">
             <h1 className="text-2xl font-bold">Seefluencer Course Dashboard</h1>
@@ -25,8 +27,6 @@ export default function LessonClient({ session }: LessonClientProps) {
             <AuthButton />
         </div>;
     }
-    const router = useRouter();
-    const { course_id } = useParams();
     const getLessons = async () => {
         if (!session?.user?.id) {
             console.error("User ID is undefined");
@@ -42,7 +42,7 @@ export default function LessonClient({ session }: LessonClientProps) {
             const data = await res.json();
             setLessons(data);
         } catch (error) {
-            toast.error("Error fetching lessons");
+            toast.error("Error fetching lessons " + JSON.stringify(error));
         }
     };
     return (

@@ -41,7 +41,7 @@ export default function LessonForm({ courseId, lesson, onSuccess, session, setLe
                 });
                 toast.success("Lesson updated successfully");
             } catch (error) {
-                toast.error("Error updating lesson");
+                toast.error("Error updating lesson " + JSON.stringify(error));
             }
         } else {
             // Create new lesson for this course
@@ -53,7 +53,7 @@ export default function LessonForm({ courseId, lesson, onSuccess, session, setLe
                 });
                 toast.success("Lesson created successfully");
             } catch (error) {
-                toast.error("Error creating lesson");
+                toast.error("Error creating lesson " + JSON.stringify(error));
             }
         }
         onSuccess();

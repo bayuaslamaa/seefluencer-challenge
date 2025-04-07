@@ -3,7 +3,7 @@
 
 import type { Course } from "@/types/course";
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -28,7 +28,7 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
                 const data = await res.json();
                 setCourses(data);
             } catch (error) {
-                toast.error("Error fetching courses");
+                toast.error("Error fetching courses " + JSON.stringify(error));
             }
         };
         if (!session) return;

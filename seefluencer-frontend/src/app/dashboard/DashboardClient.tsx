@@ -37,7 +37,7 @@ export default function DashboardClient({ session }: DashboardClientProps) {
                     .then((data) => console.log("User synced:", data))
                     .catch((error) => console.log("Error syncing user:", error));
             } catch (error) {
-                toast.error("Error sync user")
+                toast.error("Error sync user " + JSON.stringify(error));
             }
         }
     }, [session]);
@@ -64,7 +64,7 @@ export default function DashboardClient({ session }: DashboardClientProps) {
             const data = await res.json();
             setCourses(data);
         } catch (error) {
-            toast.error("Error fetching courses");
+            toast.error("Error fetching courses " + JSON.stringify(error));
         }
     };
 

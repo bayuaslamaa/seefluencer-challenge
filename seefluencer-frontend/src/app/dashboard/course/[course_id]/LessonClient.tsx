@@ -9,6 +9,7 @@ import LessonForm from "./LessonForm";
 import type { Lesson } from "@/types/lesson";
 import DashboardWrapper from "../../DashboardWrapper";
 import { AuthButton } from "../../AuthButton";
+import { toast } from "react-toastify";
 type LessonClientProps = {
     session: Session | null;
 };
@@ -31,14 +32,18 @@ export default function LessonClient({ session }: LessonClientProps) {
             console.error("User ID is undefined");
             return;
         }
-        const res = await fetch(`${API_URL}/courses/${course_id}/lessons`, {
-            headers: {
-                "X-Google-Id": session?.user?.id,
-                "Content-Type": "application/json",
-            },
-        });
-        const data = await res.json();
-        setLessons(data);
+        try {
+            const res = await fetch(`${API_URL}/courses/${course_id}/lessons`, {
+                headers: {
+                    "X-Google-Id": session?.user?.id,
+                    "Content-Type": "application/json",
+                },
+            });
+            const data = await res.json();
+            setLessons(data);
+        } catch (error) {
+            toast.error("Error fetching lessons");
+        }
     };
     return (
         <DashboardWrapper session={session}>

@@ -5,6 +5,7 @@ import { API_URL } from "@/lib/constants";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, } from "react";
 import type { Course } from "@/types/course";
+import { toast } from "react-toastify";
 type CourseFormProps = {
     course?: Course | null;
     onSuccess: () => void;
@@ -32,18 +33,30 @@ export default function CourseForm({ course, onSuccess, isOpen, setIsOpen, setCo
 
         if (course) {
             // Update existing course
-            await fetch(`${API_URL}/courses/${course.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json", "X-Google-Id": session.user.id },
-                body: JSON.stringify(payload),
-            });
+            try {
+                await fetch(`${API_URL}/courses/${course.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json", "X-Google-Id": session.user.id },
+                    body: JSON.stringify(payload),
+                });
+                toast.success("Course updated successfully");
+            } catch (error) {
+                console.error("Error updating course:", error);
+                toast.error("Error updating course");
+            }
         } else {
             // Create new course
-            await fetch(`${API_URL}/courses`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "X-Google-Id": session.user.id },
-                body: JSON.stringify(payload),
-            });
+            try {
+                await fetch(`${API_URL}/courses`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-Google-Id": session.user.id },
+                    body: JSON.stringify(payload),
+                });
+                toast.success("Course created successfully");
+            } catch (error) {
+                console.error("Error creating course:", error);
+                toast.error("Error creating course");
+            }
         }
         onSuccess();
         setIsOpen?.(false)

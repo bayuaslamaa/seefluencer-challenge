@@ -1,10 +1,10 @@
-// components/LessonForm.tsx
 "use client";
 
 import { API_URL } from "@/lib/constants";
 import { useEffect, useState } from "react";
 import type { Session } from "next-auth";
 import type { Lesson } from "@/types/lesson";
+import { toast } from "react-toastify";
 
 type LessonFormProps = {
     courseId: string;
@@ -33,18 +33,28 @@ export default function LessonForm({ courseId, lesson, onSuccess, session, setLe
 
         if (lesson) {
             // Update existing lesson
-            await fetch(`${API_URL}/lessons/${lesson.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json", "X-Google-Id": session.user.id },
-                body: JSON.stringify(payload),
-            });
+            try {
+                await fetch(`${API_URL}/lessons/${lesson.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json", "X-Google-Id": session.user.id },
+                    body: JSON.stringify(payload),
+                });
+                toast.success("Lesson updated successfully");
+            } catch (error) {
+                toast.error("Error updating lesson");
+            }
         } else {
             // Create new lesson for this course
-            await fetch(`${API_URL}/courses/${courseId}/lessons`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "X-Google-Id": session.user.id },
-                body: JSON.stringify(payload),
-            });
+            try {
+                await fetch(`${API_URL}/courses/${courseId}/lessons`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-Google-Id": session.user.id },
+                    body: JSON.stringify(payload),
+                });
+                toast.success("Lesson created successfully");
+            } catch (error) {
+                toast.error("Error creating lesson");
+            }
         }
         onSuccess();
         setLessonToEdit(null);

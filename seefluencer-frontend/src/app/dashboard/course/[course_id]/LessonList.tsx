@@ -5,6 +5,7 @@ import { API_URL } from "@/lib/constants";
 import type { Lesson } from "@/types/lesson";
 import type { Session } from "next-auth";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 
 type LessonsListProps = {
@@ -24,14 +25,18 @@ export default function LessonsList({ courseId, session, setLessons, lessons, se
         if (!session.user.id) {
             return;
         }
-        const res = await fetch(`${API_URL}/courses/${courseId}/lessons`, {
-            headers: {
-                "Content-Type": "application/json",
-                "X-Google-Id": session.user.id,
-            },
-        });
-        const data = await res.json();
-        setLessons(data);
+        try {
+            const res = await fetch(`${API_URL}/courses/${courseId}/lessons`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Google-Id": session.user.id,
+                },
+            });
+            const data = await res.json();
+            setLessons(data);
+        } catch (error) {
+            toast.error("Error fetching lessons");
+        }
     };
 
     useEffect(() => {
@@ -64,14 +69,19 @@ export default function LessonsList({ courseId, session, setLessons, lessons, se
         if (!session.user.id) {
             return;
         }
-        await fetch(`${API_URL}/lessons/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Google-Id": session.user.id,
-            },
-        });
-        fetchLessons();
+        try {
+            await fetch(`${API_URL}/lessons/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Google-Id": session.user.id,
+                },
+            });
+            fetchLessons();
+            toast.success("Lesson deleted successfully");
+        } catch (error) {
+            toast.error("Error deleting lesson");
+        }
     };
 
     return (

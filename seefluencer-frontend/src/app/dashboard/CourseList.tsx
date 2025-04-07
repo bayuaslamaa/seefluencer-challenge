@@ -5,6 +5,7 @@ import type { Course } from "@/types/course";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function CoursesList({ getCourses, courses, setCourses, setCourseToEdit, setIsOpen }: { getCourses: () => Promise<void>, courses: Course[], setCourses: (courses: Course[]) => void, setCourseToEdit: (course: Course | null) => void, setIsOpen: (isOpen: boolean) => void }) {
     const { data: session } = useSession();
@@ -17,14 +18,18 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
                 console.error("User ID is undefined");
                 return;
             }
-            const res = await fetch(`${API_URL}/courses`, {
-                headers: {
-                    "X-Google-Id": session?.user.id,
-                    "Content-Type": "application/json",
-                },
-            });
-            const data = await res.json();
-            setCourses(data);
+            try {
+                const res = await fetch(`${API_URL}/courses`, {
+                    headers: {
+                        "X-Google-Id": session?.user.id,
+                        "Content-Type": "application/json",
+                    },
+                });
+                const data = await res.json();
+                setCourses(data);
+            } catch (error) {
+                toast.error("Error fetching courses");
+            }
         };
         if (!session) return;
         fetchCourses();
@@ -35,13 +40,19 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
             console.error("User ID is undefined");
             return;
         }
-        await fetch(`${API_URL}/courses/${id}`, {
-            method: "DELETE",
-            headers: {
-                "X-Google-Id": session?.user.id,
-            },
-        });
-        getCourses();
+        try {
+            await fetch(`${API_URL}/courses/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "X-Google-Id": session?.user.id,
+                },
+            });
+            getCourses();
+            toast.success("Course deleted successfully");
+        } catch (error) {
+            console.error("Error deleting course:", error);
+            toast.error("Error deleting course");
+        }
     };
 
 
@@ -52,7 +63,7 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
         <div>
             <h2 className="text-2xl font-semibold mb-4">Courses</h2>
             <div className="space-y-4">
-                {courses.map((course) => (
+                {courses.length > 0 && courses?.map((course) => (
                     <div
                         key={course.id} className="p-4 bg-white shadow rounded flex justify-between items-center"
 

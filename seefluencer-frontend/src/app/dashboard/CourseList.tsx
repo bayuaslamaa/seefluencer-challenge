@@ -3,13 +3,16 @@
 
 import type { Course } from "@/types/course";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 export default function CoursesList({ getCourses, courses, setCourses, setCourseToEdit, setIsOpen }: { getCourses: () => Promise<void>, courses: Course[], setCourses: (courses: Course[]) => void, setCourseToEdit: (course: Course | null) => void, setIsOpen: (isOpen: boolean) => void }) {
     const { data: session } = useSession();
     const API_URL = "http://localhost:8000/api";
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [courseToDelete, setCourseToDelete] = useState<number | null>(null);
 
     const router = useRouter();
     useEffect(() => {
@@ -35,6 +38,11 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
         fetchCourses();
     }, [session, setCourses]);
 
+    const handleDeleteClick = (id: number) => {
+        setCourseToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
     const deleteCourse = async (id: number) => {
         if (!session?.user?.id) {
             console.error("User ID is undefined");
@@ -55,7 +63,6 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
         }
     };
 
-
     if (!session) {
         return <div>Please log in</div>;
     }
@@ -66,7 +73,6 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
                 {courses.length > 0 && courses?.map((course) => (
                     <div
                         key={course.id} className="p-4 bg-white shadow rounded flex justify-between items-center"
-
                     >
                         <div>
                             <h3 className="text-xl font-bold">{course.title}</h3>
@@ -85,7 +91,6 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
                             <button
                                 type="button"
                                 className="px-3 py-1 bg-[#0d65c0] text-white rounded"
-                                // On click, navigate to edit form (implement navigation)
                                 onClick={() => {
                                     setCourseToEdit?.(course)
                                     setIsOpen?.(true)
@@ -96,7 +101,7 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
                             <button
                                 type="button"
                                 className="px-3 py-1 bg-red-500 text-white rounded"
-                                onClick={() => deleteCourse(course.id)}
+                                onClick={() => handleDeleteClick(course.id)}
                             >
                                 Delete
                             </button>
@@ -104,6 +109,22 @@ export default function CoursesList({ getCourses, courses, setCourses, setCourse
                     </div>
                 ))}
             </div>
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => {
+                    setIsDeleteModalOpen(false);
+                    setCourseToDelete(null);
+                }}
+                onConfirm={() => {
+                    if (courseToDelete) {
+                        deleteCourse(courseToDelete);
+                    }
+                }}
+                title="Delete Course"
+                message="Are you sure you want to delete this course? This action cannot be undone."
+                confirmText="Delete"
+            />
         </div>
     );
 }

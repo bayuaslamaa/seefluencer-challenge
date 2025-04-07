@@ -1,12 +1,11 @@
-// components/LessonsList.tsx
 "use client";
 
 import { API_URL } from "@/lib/constants";
 import type { Lesson } from "@/types/lesson";
 import type { Session } from "next-auth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 type LessonsListProps = {
     courseId: string;
@@ -18,6 +17,9 @@ type LessonsListProps = {
 };
 
 export default function LessonsList({ courseId, session, setLessons, lessons, setLessonToEdit, setIsOpen }: LessonsListProps) {
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [lessonToDelete, setLessonToDelete] = useState<number | null>(null);
+
     const fetchLessons = async () => {
         if (!session) {
             return;
@@ -40,27 +42,15 @@ export default function LessonsList({ courseId, session, setLessons, lessons, se
     };
 
     useEffect(() => {
-        const fetchLessons = async () => {
-            if (!session) {
-                return;
-            }
-            if (!session.user.id) {
-                return;
-            }
-            const res = await fetch(`${API_URL}/courses/${courseId}/lessons`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Google-Id": session.user.id,
-                },
-            });
-            const data = await res.json();
-            setLessons(data);
-        };
-
         if (courseId) {
             fetchLessons();
         }
     }, [courseId, session, setLessons]);
+
+    const handleDeleteClick = (id: number) => {
+        setLessonToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
 
     const deleteLesson = async (id: number) => {
         if (!session) {
@@ -88,9 +78,7 @@ export default function LessonsList({ courseId, session, setLessons, lessons, se
         <div className="mt-4">
             <div className="space-y-4">
                 {lessons?.map((lesson) => (
-                    <div key={lesson.id} className="p-4 bg-white shadow rounded flex justify-between items-center"
-
-                    >
+                    <div key={lesson.id} className="p-4 bg-white shadow rounded flex justify-between items-center">
                         <div>
                             <h3 className="text-xl font-bold">{lesson.title}</h3>
                             <p className="text-gray-600">{lesson.content}</p>
@@ -109,7 +97,7 @@ export default function LessonsList({ courseId, session, setLessons, lessons, se
                             <button
                                 type="button"
                                 className="px-3 py-1 bg-red-500 text-white rounded"
-                                onClick={() => deleteLesson(lesson.id)}
+                                onClick={() => handleDeleteClick(lesson.id)}
                             >
                                 Delete
                             </button>
@@ -117,6 +105,22 @@ export default function LessonsList({ courseId, session, setLessons, lessons, se
                     </div>
                 ))}
             </div>
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => {
+                    setIsDeleteModalOpen(false);
+                    setLessonToDelete(null);
+                }}
+                onConfirm={() => {
+                    if (lessonToDelete) {
+                        deleteLesson(lessonToDelete);
+                    }
+                }}
+                title="Delete Lesson"
+                message="Are you sure you want to delete this lesson? This action cannot be undone."
+                confirmText="Delete"
+            />
         </div>
     );
 }
